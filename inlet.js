@@ -39,13 +39,13 @@ var parse_rows = function(rows) {
        
        desired structure:
        
-       theses = [thesis_1..m]
-       parties = [ Party_i..n ]
+       theses  = [ thesis_1..m ]
+       parties = [ party_i..n ]
        stances = [ [thesis_1..m]_1..n ]
     */
 
   var theses = [],
-      parties = null, // will be []
+      parties = null,
       stancesByThesis = [];
   
   var stance2distance = {
@@ -65,9 +65,13 @@ var parse_rows = function(rows) {
       parties = d3.keys(row);
     }
     var stancesThisRow = [];
-    parties.forEach(party) {
+
+    parties.forEach( function (party) {
       stancesThisRow.push(row[party]);
-    }
+    });
+    
+    stancesThisRow = stancesThisRow.map(function (item) {return stance2distance[item];});
+
     stancesByThesis.push(stancesThisRow);
   });
   
