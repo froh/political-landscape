@@ -33,7 +33,7 @@
 
 /* load the theses */
 /*TODO: allow for multiple files for different elections? */
-var Bayern_2013 = tributary["Bayern-2013.tsv"];
+var Bayern_2013 = tributary.bayern2013;
 console.log(Bayern_2013);
 
 /*var theses = d3.tsv(
