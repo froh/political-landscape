@@ -54,18 +54,20 @@ var parse_rows = function(rows) {
     '#': 0  // agree
   }
   
-  rows.forEach(function(row) {
+  rows.forEach(function(_row) {
+    row = _row;
     var thesis = row.These; // 'These' = german for 'thesis', that's hwo the data is.
     // TODO: chop off thesis number?
     theses.push(thesis);
-    delete row.These;
     
-    // set the parties fromt the first row keys.  this also sets the index order.
+    // Set the parties fromt the first row keys.
     if (!parties) {
-      parties = d3.keys(row);
+      parties = d3.keys(row).filter(function(x) {return x !== 'These';});
     }
+
     var stancesThisRow = [];
 
+    
     parties.forEach( function (party) {
       stancesThisRow.push(row[party]);
     });
@@ -83,6 +85,7 @@ var parse_rows = function(rows) {
     stances: stances
   };
 }
+
 
 
 /* load the theses */
