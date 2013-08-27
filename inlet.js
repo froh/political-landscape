@@ -34,7 +34,7 @@
 /* load the theses */
 /*TODO: allow for multiple files for different elections? */
 var theses = d3.tsv(
-  'bayern2013.tsv',
+  'Bayern-2013.tsv',
   function (error, rows) {
     console.log(error);
     console.log(rows);
