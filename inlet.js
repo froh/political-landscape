@@ -31,22 +31,6 @@
  
 */
 
-/* load the theses */
-/* TODO: un-tributary this */
-/* TODO: allow for multiple files for different elections */
-console.log("Bayern_2013");
-tributary.trace = true;
-
-var Bayern_2013 = tributary.bayern2013;
-console.log(Bayern_2013);
-
-var data = parse_rows(Bayern_2013);
-console.log(data);
-
-/* create node for each thesis */
-/* create node for each party */
-/* create link from each party to each thesis */
-/* create node for user */
 
 
 var parse_rows = function(rows) {
@@ -65,9 +49,9 @@ var parse_rows = function(rows) {
       stancesByThesis = [];
   
   var stance2distance = {
-    'x':2, // nope
-    '-':1, // neutral
-    '#':0  // agree
+    'x': 2, // nope
+    '-': 1, // neutral
+    '#': 0  // agree
   }
   
   rows.forEach(function(row) {
@@ -95,3 +79,20 @@ var parse_rows = function(rows) {
     stances: stances
   };
 }
+
+
+/* load the theses */
+/* TODO: un-tributary this */
+/* TODO: allow for multiple files for different elections */
+tributary.trace = true;
+
+var Bayern_2013 = tributary.bayern2013;
+console.log(Bayern_2013);
+
+var data = parse_rows(Bayern_2013);
+console.log(data);
+
+/* create node for each thesis */
+/* create node for each party */
+/* create link from each party to each thesis */
+/* create node for user */
