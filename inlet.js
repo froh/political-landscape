@@ -33,7 +33,10 @@
 
 /* load the theses */
 /*TODO: allow for multiple files for different elections? */
-var theses = d3.tsv(
+var Bayern_2013 = tributary["Bayern-2013.tsv"];
+console.log(Bayern_2013);
+
+/*var theses = d3.tsv(
   'Bayern-2013.tsv',
   function (error, rows) {
     console.log(error);
@@ -45,6 +48,7 @@ var theses = d3.tsv(
     /* create link from each party to each thesis */
     /* create node for user */
   })
+*/
 
 var parse_rows = function(rows) {
     /* 'rows' is the input columns: Thesis, Party1..n 
