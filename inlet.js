@@ -32,38 +32,66 @@
 */
 
 /* load the theses */
-/*TODO: allow for multiple files for different elections? */
+/* TODO: un-tributary this */
+/* TODO: allow for multiple files for different elections */
 var Bayern_2013 = tributary.bayern2013;
-console.log(Bayern_2013);
 
-/*var theses = d3.tsv(
-  'Bayern-2013.tsv',
-  function (error, rows) {
-    console.log(error);
-    console.log(rows);
-    
-    data = parse_rows(rows);
-    /* create node for each thesis */
-    /* create node for each party */
-    /* create link from each party to each thesis */
-    /* create node for user */
-  })
-*/
+var data = parse_rows(Bayern_2013);
+console.log(data);
+
+/* create node for each thesis */
+/* create node for each party */
+/* create link from each party to each thesis */
+/* create node for user */
+
 
 var parse_rows = function(rows) {
-    /* 'rows' is the input columns: Thesis, Party1..n 
+    /* 'rows' is an array with the input columns: 
+       [  {Thesis: thesis1, Party_x: stance }, ... ]
+       
        desired structure:
        
        theses = [thesis_1..m]
        parties = [ Party_i..n ]
        stances = [ [thesis_1..m]_1..n ]
     */
-  data = {
-    theses: [],
-    parties: [],
-    stances: []
-  };
+
+  var theses = [],
+      parties = null, // will be []
+      stancesByThesis = [];
   
+  var stance2distance = {
+    'x':2, // nope
+    '-':1, // neutral
+    '#':0  // agree
+  }
+  
+  rows.forEach(function(row) {
+    var thesis = row.These; // 'These' = german for 'thesis', that's hwo the data is.
+    // TODO: chop off thesis number?
+    theses.push(thesis);
+    delete row.These;
+    
+    // set the parties fromt the first row keys.  this also sets the index order.
+    if (!parties) {
+      parties = d3.keys(row);
+    }
+    var stancesThisRow = [];
+    parties.forEach(party) {
+      stancesThisRow.push(row[party]);
+    }
+    stancesByThesis.push(stancesThisRow);
+  });
+  
+  var stances = d3.transpose(stancesByThesis);
+  
+  var data = {
+    theses: theses,
+    parties: parties,
+    stances: stances
+  };
   
   return data;
 }
+
+    
