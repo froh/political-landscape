@@ -34,6 +34,7 @@
 /* load the theses */
 /* TODO: un-tributary this */
 /* TODO: allow for multiple files for different elections */
+tribituary.trace = true;
 var Bayern_2013 = tributary.bayern2013;
 console.log(Bayern_2013);
 
