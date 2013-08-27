@@ -35,12 +35,31 @@
 /*TODO: allow for multiple files for different elections? */
 var theses = d3.tsv(
   'bayern2013.tsv',
-  function(d) {
-    /* input columns: Thesis, Party1..n 
-       desired output structure:
-    */
-  },
-  function(error, rows) {
+  function (error, rows) {
     console.log(error);
     console.log(rows);
+    
+    data = parse_rows(rows);
+    /* create node for each thesis */
+    /* create node for each party */
+    /* create link from each party to each thesis */
+    /* create node for user */
   })
+
+var parse_rows = function(rows) {
+    /* 'rows' is the input columns: Thesis, Party1..n 
+       desired structure:
+       
+       theses = [thesis_1..m]
+       parties = [ Party_i..n ]
+       stances = [ [thesis_1..m]_1..n ]
+    */
+  data = {
+    theses: [],
+    parties: [],
+    stances: []
+  };
+  
+  
+  return data;
+}
