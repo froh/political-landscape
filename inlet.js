@@ -35,6 +35,7 @@
 /* TODO: un-tributary this */
 /* TODO: allow for multiple files for different elections */
 var Bayern_2013 = tributary.bayern2013;
+console.log(Bayern_2013);
 
 var data = parse_rows(Bayern_2013);
 console.log(data);
@@ -85,13 +86,9 @@ var parse_rows = function(rows) {
   
   var stances = d3.transpose(stancesByThesis);
   
-  var data = {
+  return {
     theses: theses,
     parties: parties,
     stances: stances
   };
-  
-  return data;
 }
-
-    
