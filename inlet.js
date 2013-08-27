@@ -1,7 +1,7 @@
 /* visualization of the political landscape as induced by Wahl-O-Mat data
 
  Copyright (C) 2013 Susanne Oberhauser-Hirschoff
- This whole gist is under a BSD-3 clause License (see file BSD-3-License)
+ This whole gist is under a BSD-3 clause License (see file BSD-3-License.txt)
 
  A force based interactive layout of a Wahl-O-Mat http://www.wahl-o-mat.de
  political landscape.
@@ -32,6 +32,11 @@
 */
 
 
+var W = {
+  disagree:2,
+  neutral:1,
+  agree:0
+}
 
 var parse_rows = function(rows) {
     /* 'rows' is an array with the input columns: 
@@ -49,9 +54,9 @@ var parse_rows = function(rows) {
       stancesByThesis = [];
   
   var stance2distance = {
-    'x': 2, // nope
-    '-': 1, // neutral
-    '#': 0  // agree
+    'x': W.disagree,
+    '-': W.neutral,
+    '#': W.agree
   }
   
   rows.forEach(function(_row) {
@@ -94,14 +99,54 @@ var parse_rows = function(rows) {
 tributary.trace = true;
 
 var Bayern_2013 = tributary.bayern2013;
-console.log(Bayern_2013);
 
 var data = parse_rows(Bayern_2013);
 console.log(data);
 
-svg = d3.select('svg');
-svg.append('circle').attr('r',54).attr({'cx':128,cy:200});
+var graph = {
+  nodes: [],
+  edges: []
+}
+
 /* create node for each thesis */
+for (var i in data.theses) {
+  graph.nodes.push(
+    { 
+      type: 'These',
+      label: i
+    });
+}
+var nTheses = graph.nodes.length,
+    ichParty = nTheses;
+
+/* create node for user */
+graph.nodes.push(
+  { 
+    type: 'Partei',
+    label: 'Ich'
+  });
+
+for (i in d3.range(nTheses)) {
+  graph.edges.push(
+    { 
+      source: meParty,
+      target: i,
+      weight: W.neutral
+    });
+}
+h = tributary.sh;
+w = tributary.sw;
+
+var force = d3.layout.force()
+  .nodes(graph.nodes)
+  .links(graph.edges)
+  .size([w, h])
+  .linkDistance([50])
+  .charge([-100])
+  .start();
+
+svg = d3.select('svg');
+svg.append('circle').attr('r',81).attr({'cx':308,cy:200});
+
 /* create node for each party */
 /* create link from each party to each thesis */
-/* create node for user */
