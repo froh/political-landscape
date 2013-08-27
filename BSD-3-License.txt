@@ -1,4 +1,5 @@
-Copyright (C) 2013 Susanne Oberhauser-Hirschoff
+The code in this gist is
+copyright (C) 2013 Susanne Oberhauser-Hirschoff
 
 All rights reserved.
 

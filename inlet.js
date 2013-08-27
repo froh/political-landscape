@@ -99,6 +99,8 @@ console.log(Bayern_2013);
 var data = parse_rows(Bayern_2013);
 console.log(data);
 
+svg = d3.select('svg');
+svg.append('circle').attr('r',54).attr({'cx':128,cy:200});
 /* create node for each thesis */
 /* create node for each party */
 /* create link from each party to each thesis */
