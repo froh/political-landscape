@@ -190,8 +190,8 @@ var partyColor = function () {
     "Grüne": d3.rgb(100,161,45),
     FW:"#007E84",
     FDP:"#ffd600",
-    DVU:"",
-    NPD:"",
+    DVU:"#964B00",
+    NPD:"#964B00",
     "ÖDP":"#EA7c13"
   }
   var _generatedColors = {};
@@ -201,7 +201,7 @@ var partyColor = function () {
     console.log(party);
     if (party in _partyColor) return _partyColor[party];
     if (party in _generatedColors) return _generatedColors[party];
-    return _generatedColors[d] = colorGenerator(nColors++);
+    return _generatedColors[party] = colorGenerator(nColors++);
   } 
 }()
 
@@ -248,7 +248,12 @@ var nodes = svg.selectAll("circle")
         c = f;
       }
       return c;
-    }).call(force.drag)	;
+    }).call(force.drag)
+    .on('mouseover', function() {
+    })
+    .on('mouseout', function() {
+    })
+	;
 
 //Every time the simulation "ticks", this will be called
 force.on("tick", function() {
