@@ -125,7 +125,7 @@ var nTheses = graph.nodes.length,
 graph.nodes.push(
   { 
     type: 'Wähler',
-    label: 'Ich'
+    label: 'Wähler'
   });
 
 for (var i in d3.range(nTheses)) {
@@ -173,10 +173,10 @@ var force = d3.layout.force()
   .links(graph.edges)
   .size([w, h])
   .linkDistance(function (link) {
-    return Math.pow(link.weight,1.2) *150 + 100;
+    return Math.pow(link.weight,2.4) *100 + 30;
   })
-  .linkStrength(0.7)
-  .charge(20)
+  .linkStrength(0.99)
+  .charge(0)
 .friction(0.8)
   .start();
 
@@ -251,7 +251,7 @@ var nodes = svg.selectAll("circle")
         c = f;
       }
       return c;
-    }).call(force.drag)
+    }).style('opacity',0.9).attr('stroke-width',1).attr('stroke','black').call(force.drag)
     .on('mouseover', function(d) {
       var x = d3.select(this).attr("cx"),
           y = d3.select(this).attr("cy");
@@ -261,7 +261,7 @@ var nodes = svg.selectAll("circle")
   .attr("y", y)
   .attr("text-anchor", "middle")
   .attr("font-family", "sans-serif")
-  .attr("font-size", "11px")
+  .attr("font-size", "14px")
   .attr("font-weight", "bold")
   .attr("fill", "black")
   .text(d.label);
