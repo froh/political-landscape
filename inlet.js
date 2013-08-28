@@ -176,7 +176,7 @@ var force = d3.layout.force()
     return link.weight * 161 + 20;
   })
   .linkStrength(0.940761464832)
-  .charge(3)
+  .charge(0)
   .start();
 
 //console.log(graph);
@@ -248,9 +248,8 @@ var nodes = svg.selectAll("circle")
         c = f;
       }
       return c;
- })
-	.call(force.drag);
-			
+    }).call(force.drag)	;
+
 //Every time the simulation "ticks", this will be called
 force.on("tick", function() {
 
