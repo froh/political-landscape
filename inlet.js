@@ -145,7 +145,8 @@ data.parties.forEach(function( party, id) {
   graph.nodes.push(
     { 
       type: 'Partei',
-      label: party
+      label: party,
+      party: party
     });
 })
 
@@ -157,7 +158,8 @@ data.stances.forEach( function (partysTheses, partyId) {
         source: partyOffset + partyId,
         target: thesisId,
         weight: thesisWeight,
-        type: 'Partei Meinung'
+        type: 'Partei Meinung',
+        party: data.parties[partyId]
       });
   })
 })
@@ -180,12 +182,35 @@ var force = d3.layout.force()
 //console.log(graph);
 //console.log(force);
 
+var partyColor = function () {
+  var _partyColor = {
+    SPD:"#e2001a",
+    Linke:"#FF0000",
+    CSU: d3.rgb(0,153,255),
+    "Grüne": d3.rgb(100,161,45),
+    FW:"#007E84",
+    FDP:"#ffd600",
+    DVU:"",
+    NPD:"",
+    "ÖDP":"#EA7c13"
+  }
+  var _generatedColors = {};
+  var colorGenerator = d3.scale.category20();
+  var nColors = 0;
+  return function (party) {
+    console.log(party);
+    if (party in _partyColor) return _partyColor[party];
+    if (party in _generatedColors) return _generatedColors[party];
+    return _generatedColors[d] = colorGenerator(nColors++);
+  } 
+}()
+
 var graceAndStyle = {
-  These:   { elem: 'circle', attr: { r:5 }, style: { fill: "#0D776F" }},
-  Partei:  { elem: 'circle', attr: { r:10 }, style: { fill: "#4C658A" }},
-  "Wähler":  { elem: 'circle', attr: { r:7 }, style: { fill: "#5EC3D6" }},
+  These:   { elem: 'circle', attr: { r:5 }, style: { fill: "#EEEEEE" }},
+  Partei:  { elem: 'circle', attr: { r:10 }, style: { fill: partyColor }},
+  "Wähler":  { elem: 'circle', attr: { r:7 }, style: { fill: "#ffffff" }},
   "persönliche Meinung":  { elem: 'line', attr: {}, style: {'stroke-width': 2, stroke: "#5EC3D6" }},
-  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width':1, stroke: "#4C658A" }}
+  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width':1, stroke: partyColor }}
 }
 
 //Create SVG element
@@ -198,7 +223,8 @@ var edges = svg.selectAll("line")
 	.enter()
 	.append("line")
  .style("stroke", function(d) {
-   return graceAndStyle[d.type].style.stroke;
+   var f = graceAndStyle[d.type].style.stroke;
+   return typeof(f) == 'function'?f(d.party):f; 
  })
 	.style("stroke-width",  function(d) {
    return graceAndStyle[d.type].style['stroke-width'];
@@ -213,7 +239,15 @@ var nodes = svg.selectAll("circle")
    return graceAndStyle[d.type].attr.r;
  })
 	.style("fill", function(d) {
-   return graceAndStyle[d.type].style.fill;
+      var f = graceAndStyle[d.type].style.fill;
+      var c;
+      if (typeof(f) == 'function') {
+        c = f(d.party);
+        console.log(c);
+      } else {
+        c = f;
+      }
+      return c;
  })
 	.call(force.drag);
 			
