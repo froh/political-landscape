@@ -108,6 +108,7 @@ var graph = {
   edges: []
 }
 
+
 /* create node for each thesis */
 data.theses.forEach(function (thesis, i) {
   graph.nodes.push(
@@ -123,7 +124,7 @@ var nTheses = graph.nodes.length,
 /* create node for user */
 graph.nodes.push(
   { 
-    type: 'Partei',
+    type: 'Wähler',
     label: 'Ich'
   });
 
@@ -170,14 +171,22 @@ var force = d3.layout.force()
   .links(graph.edges)
   .size([w, h])
   .linkDistance(function (link) {
-    return link.weight * 172;
+    return link.weight * 161 + 20;
   })
-  .linkStrength(0.9)
-  .charge(50)
+  .linkStrength(0.940761464832)
+  .charge(3)
   .start();
 
 //console.log(graph);
 //console.log(force);
+
+var graceAndStyle = {
+  These:   { elem: 'circle', attr: { r:5 }, style: { fill: "#0D776F" }},
+  Partei:  { elem: 'circle', attr: { r:10 }, style: { fill: "#4C658A" }},
+  "Wähler":  { elem: 'circle', attr: { r:7 }, style: { fill: "#5EC3D6" }},
+  "persönliche Meinung":  { elem: 'line', attr: {}, style: {'stroke-width': 2, stroke: "#5EC3D6" }},
+  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width':1, stroke: "#4C658A" }}
+}
 
 //Create SVG element
 svg = d3.select('svg');
@@ -188,16 +197,24 @@ var edges = svg.selectAll("line")
 	.data(graph.edges)
 	.enter()
 	.append("line")
-	.style("stroke", "#ccc")
-	.style("stroke-width", 1);
+ .style("stroke", function(d) {
+   return graceAndStyle[d.type].style.stroke;
+ })
+	.style("stroke-width",  function(d) {
+   return graceAndStyle[d.type].style['stroke-width'];
+ });
 			
 //Create nodes as circles
 var nodes = svg.selectAll("circle")
 	.data(graph.nodes)
 	.enter()
 	.append("circle")
-	.attr("r", 10)
-	.style("fill", "#aaa")
+	.attr("r", function(d) {
+   return graceAndStyle[d.type].attr.r;
+ })
+	.style("fill", function(d) {
+   return graceAndStyle[d.type].style.fill;
+ })
 	.call(force.drag);
 			
 //Every time the simulation "ticks", this will be called
