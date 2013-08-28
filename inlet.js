@@ -173,10 +173,11 @@ var force = d3.layout.force()
   .links(graph.edges)
   .size([w, h])
   .linkDistance(function (link) {
-    return link.weight * 161 + 20;
+    return Math.pow(link.weight,1.2) *150 + 100;
   })
-  .linkStrength(0.940761464832)
-  .charge(0)
+  .linkStrength(0.7)
+  .charge(20)
+.friction(0.8)
   .start();
 
 //console.log(graph);
@@ -187,6 +188,8 @@ var partyColor = function () {
     SPD:"#e2001a",
     Linke:"#FF0000",
     CSU: d3.rgb(0,153,255),
+    CDU: "#000",
+    Piraten:"#FF8800",
     "Grüne": d3.rgb(100,161,45),
     FW:"#007E84",
     FDP:"#ffd600",
@@ -206,7 +209,7 @@ var partyColor = function () {
 }()
 
 var graceAndStyle = {
-  These:   { elem: 'circle', attr: { r:5 }, style: { fill: "#EEEEEE" }},
+  These:   { elem: 'circle', attr: { r:12 }, style: { fill: "#EEEEEE" }},
   Partei:  { elem: 'circle', attr: { r:10 }, style: { fill: partyColor }},
   "Wähler":  { elem: 'circle', attr: { r:7 }, style: { fill: "#ffffff" }},
   "persönliche Meinung":  { elem: 'line', attr: {}, style: {'stroke-width': 2, stroke: "#5EC3D6" }},
@@ -249,9 +252,24 @@ var nodes = svg.selectAll("circle")
       }
       return c;
     }).call(force.drag)
-    .on('mouseover', function() {
+    .on('mouseover', function(d) {
+      var x = d3.select(this).attr("cx"),
+          y = d3.select(this).attr("cy");
+      svg.append("text")
+  .attr("id", "tooltip")
+  .attr("x", x)
+  .attr("y", y)
+  .attr("text-anchor", "middle")
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("font-weight", "bold")
+  .attr("fill", "black")
+  .text(d.label);
+
     })
     .on('mouseout', function() {
+      d3.select("#tooltip").remove();
+
     })
 	;
 
