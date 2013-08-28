@@ -175,7 +175,7 @@ var force = d3.layout.force()
   .linkDistance(function (link) {
     return Math.pow(link.weight,2.4) *100 + 30;
   })
-  .linkStrength(0.99)
+  .linkStrength(0.8316)
   .charge(0)
 .friction(0.8)
   .start();
@@ -213,7 +213,7 @@ var graceAndStyle = {
   Partei:  { elem: 'circle', attr: { r:10 }, style: { fill: partyColor }},
   "Wähler":  { elem: 'circle', attr: { r:7 }, style: { fill: "#ffffff" }},
   "persönliche Meinung":  { elem: 'line', attr: {}, style: {'stroke-width': 2, stroke: "#5EC3D6" }},
-  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width':1, stroke: partyColor }}
+  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width': function(d){return d.weight*3+1}, stroke: partyColor }}
 }
 
 //Create SVG element
@@ -230,9 +230,10 @@ var edges = svg.selectAll("line")
    return typeof(f) == 'function'?f(d.party):f; 
  })
 	.style("stroke-width",  function(d) {
-   return graceAndStyle[d.type].style['stroke-width'];
- });
-			
+      f=  graceAndStyle[d.type].style['stroke-width'];
+   return typeof(f) == 'function'?f(d):f
+ }).style('opacity',0.8);
+
 //Create nodes as circles
 var nodes = svg.selectAll("circle")
 	.data(graph.nodes)
