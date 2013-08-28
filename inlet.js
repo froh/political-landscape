@@ -116,8 +116,9 @@ for (var i in data.theses) {
       label: i
     });
 }
+
 var nTheses = graph.nodes.length,
-    ichParty = nTheses;
+    meParty = nTheses;
 
 /* create node for user */
 graph.nodes.push(
@@ -131,9 +132,36 @@ for (i in d3.range(nTheses)) {
     { 
       source: meParty,
       target: i,
-      weight: W.neutral
+      weight: W.neutral,
+      type: 'persönliche Meinung'
     });
 }
+
+var partyOffset = graph.nodes.length;
+
+/* create node for each party */
+for (var party in data.parties) {
+  graph.nodes.push(
+    { 
+      type: 'Partei',
+      label: party
+    });
+}
+
+/* create link from each party to each thesis with appropriate weight */
+data.stances.forEach( function (partysTheses, partyId) {
+  partysTheses.forEach( function (thesisWeight, thesisId) {
+    graph.edges.push(
+      { 
+        source: partyOffset + partyId,
+        target: thesisId,
+        weight: thesisWeight,
+        type: 'Partei Meinung'
+      });
+  })
+})
+
+
 h = tributary.sh;
 w = tributary.sw;
 
@@ -148,5 +176,3 @@ var force = d3.layout.force()
 svg = d3.select('svg');
 svg.append('circle').attr('r',81).attr({'cx':308,cy:200});
 
-/* create node for each party */
-/* create link from each party to each thesis */
