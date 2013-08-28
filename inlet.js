@@ -101,7 +101,7 @@ tributary.trace = true;
 var Bayern_2013 = tributary.bayern2013;
 
 var data = parse_rows(Bayern_2013);
-console.log(data);
+//console.log(data);
 
 var graph = {
   nodes: [],
@@ -109,13 +109,13 @@ var graph = {
 }
 
 /* create node for each thesis */
-for (var i in data.theses) {
+data.theses.forEach(function (thesis, i) {
   graph.nodes.push(
     { 
       type: 'These',
-      label: i
+      label: thesis
     });
-}
+})
 
 var nTheses = graph.nodes.length,
     meParty = nTheses;
@@ -127,11 +127,11 @@ graph.nodes.push(
     label: 'Ich'
   });
 
-for (i in d3.range(nTheses)) {
+for (var i in d3.range(nTheses)) {
   graph.edges.push(
     { 
       source: meParty,
-      target: i,
+      target: +i,  // WTF why is i a string here??
       weight: W.neutral,
       type: 'persönliche Meinung'
     });
@@ -140,13 +140,13 @@ for (i in d3.range(nTheses)) {
 var partyOffset = graph.nodes.length;
 
 /* create node for each party */
-for (var party in data.parties) {
+data.parties.forEach(function( party, id) {
   graph.nodes.push(
     { 
       type: 'Partei',
       label: party
     });
-}
+})
 
 /* create link from each party to each thesis with appropriate weight */
 data.stances.forEach( function (partysTheses, partyId) {
@@ -169,10 +169,46 @@ var force = d3.layout.force()
   .nodes(graph.nodes)
   .links(graph.edges)
   .size([w, h])
-  .linkDistance([50])
-  .charge([-100])
+  .linkDistance(function (link) {
+    return link.weight * 172;
+  })
+  .linkStrength(0.9)
+  .charge(50)
   .start();
 
-svg = d3.select('svg');
-svg.append('circle').attr('r',81).attr({'cx':308,cy:200});
+//console.log(graph);
+//console.log(force);
 
+//Create SVG element
+svg = d3.select('svg');
+
+			
+//Create edges as lines
+var edges = svg.selectAll("line")
+	.data(graph.edges)
+	.enter()
+	.append("line")
+	.style("stroke", "#ccc")
+	.style("stroke-width", 1);
+			
+//Create nodes as circles
+var nodes = svg.selectAll("circle")
+	.data(graph.nodes)
+	.enter()
+	.append("circle")
+	.attr("r", 10)
+	.style("fill", "#aaa")
+	.call(force.drag);
+			
+//Every time the simulation "ticks", this will be called
+force.on("tick", function() {
+
+	edges.attr("x1", function(d) { return d.source.x; })
+		 .attr("y1", function(d) { return d.source.y; })
+		 .attr("x2", function(d) { return d.target.x; })
+		 .attr("y2", function(d) { return d.target.y; });
+			
+	nodes.attr("cx", function(d) { return d.x; })
+         .attr("cy", function(d) { return d.y; });
+	
+});
