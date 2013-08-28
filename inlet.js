@@ -56,7 +56,8 @@ var parse_rows = function(rows) {
   var stance2distance = {
     'x': W.disagree,
     '-': W.neutral,
-    '#': W.agree
+    '#': W.agree,
+    'y': W.agree,
   }
   
   rows.forEach(function(_row) {
