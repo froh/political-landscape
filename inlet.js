@@ -193,7 +193,7 @@ var partyColor = function () {
     "Grüne": d3.rgb(100,161,45),
     FW:"#007E84",
     FDP:"#ffd600",
-    DVU:"#964B00",
+    REP:"#964B00",
     NPD:"#964B00",
     "ÖDP":"#EA7c13"
   }
@@ -213,7 +213,7 @@ var graceAndStyle = {
   Partei:  { elem: 'circle', attr: { r:10 }, style: { fill: partyColor }},
   "Wähler":  { elem: 'circle', attr: { r:7 }, style: { fill: "#ffffff" }},
   "persönliche Meinung":  { elem: 'line', attr: {}, style: {'stroke-width': 2, stroke: "#5EC3D6" }},
-  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width': function(d){return d.weight*3+1}, stroke: partyColor }}
+  "Partei Meinung":  { elem: '', attr: {}, style: {'stroke-width': function(d){return 5-d.weight*d.weight}, stroke: partyColor }}
 }
 
 //Create SVG element
@@ -232,7 +232,7 @@ var edges = svg.selectAll("line")
 	.style("stroke-width",  function(d) {
       f=  graceAndStyle[d.type].style['stroke-width'];
    return typeof(f) == 'function'?f(d):f
- }).style('opacity',0.8);
+ }).style('opacity',0.576);
 
 //Create nodes as circles
 var nodes = svg.selectAll("circle")
