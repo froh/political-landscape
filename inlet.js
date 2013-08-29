@@ -57,7 +57,7 @@ var parse_rows = function(rows) {
     'x': W.disagree,
     '-': W.neutral,
     '#': W.agree,
-    'y': W.agree,
+    'y': W.agree
   }
   
   rows.forEach(function(_row) {
@@ -248,7 +248,6 @@ var nodes = svg.selectAll("circle")
       var c;
       if (typeof(f) == 'function') {
         c = f(d.party);
-        console.log(c);
       } else {
         c = f;
       }
@@ -261,6 +260,7 @@ var nodes = svg.selectAll("circle")
   .attr("id", "tooltip")
   .attr("x", x)
   .attr("y", y)
+   //.attr('pointer-events',none)
   .attr("text-anchor", "middle")
   .attr("font-family", "sans-serif")
   .attr("font-size", "14px")
