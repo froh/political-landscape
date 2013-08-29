@@ -17,6 +17,8 @@
  To get the theses reasonably arranged by default, they get a distance to the center,
  and to each other, so they will create a random circle.
  
+ The Neutral stance is represented as a separate node.
+ TODO: rename from 'Ich' to 'neutral'
 
  The user will also be represented as a node.
  
