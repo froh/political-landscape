@@ -151,7 +151,7 @@ function makeGraph(data) {
     /* the graph proper */
     var graph = {
         nodes: [],
-        edges: [],
+        edges: []
     }
 
     /* create node for each thesis */
