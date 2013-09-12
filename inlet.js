@@ -133,6 +133,11 @@ function Party() {
 }
 Party.prototype = new Node;
 
+function Neutral() {
+    Node.apply(this, arguments);
+}
+Neutral.prototype = new Node;
+
 // edges
 function Link(s, t) {
     this.source = s;
@@ -164,7 +169,7 @@ function makeGraph(data) {
     var neutralStanceId = nTheses;
 
     /* create node for user and for The Neutral Stance */
-    graph.neutralStance = new Party('Neutral');
+    graph.neutralStance = new Neutral('Neutral');
     graph.nodes.push(graph.neutralStance);
 
     for (var i in d3.range(nTheses)) {
@@ -195,18 +200,28 @@ function makeGraph(data) {
 // enrich the nodes and edges of the graph with visualization 
 Stance.prototype.linkDistance = function () {
     // transform stance.agreement into distance in graph
-    return Math.pow(this.agreement, 2.4) * 110 + 20;
+    return Math.pow(this.agreement, 2.4) * 120 + 10;
+}
+
+Stance.prototype.linkStrength = function() {
+    var linkStrength = _.object([
+	[W.disagree, 1],
+	[W.neutral,  0.1],
+	[W.agree,    1]
+    ]);
+    
+    return linkStrength[this.agreement];
 }
 
 Stance.prototype.pimpLine = function(selection, i) {
     var strokeWidth = _.object([
 	[W.disagree, 2],
-	[W.neutral,  2],
-	[W.agree,    3]
+	[W.neutral,  1],
+	[W.agree,    2]
     ]);
     var strokeDasharray = _.object([
-	[W.disagree, " 7, 3"],
-	[W.neutral,  " 2, 2"],
+	[W.disagree, " 4, 4"],
+	[W.neutral,  "2, 2"],
 	[W.agree,    "10, 0"]
     ]);
     
@@ -226,10 +241,14 @@ Node.prototype.pimpCircle = function(selection, i) {
 	.attr('stroke', 'black');
 }
 
-Node.prototype.radius = function() { return 6; }
-Node.prototype.color = function() { return 'white'; }
+Node.prototype.radius = function() { return this._radius; }
+Node.prototype._radius = 7;
+Node.prototype.color = function() { return 'grey'; }
 
-Party.prototype.radius = function() { return 12; }
+Neutral.prototype._radius = 4;
+Neutral.prototype.color = function() { return 'white'; }
+
+Party.prototype._radius = 12;
 Party.prototype.color = (function() {
 
     var _partyColors = {
@@ -265,14 +284,18 @@ function visualizeGraph(graph, w, h) {
     w = w || 1200;
     h = h || 1000;
 
+    graph.neutralStance.x = w/2;
+    graph.neutralStance.y = h/2;
+    graph.neutralStance.fixed = true;
+
     var force = d3.layout.force()
 	.nodes(graph.nodes)
 	.links(graph.edges)
 	.size([w, h])
 	.linkDistance( function(s, i) { return s.linkDistance(); } )
-	.linkStrength(0.9)
+	.linkStrength( function(s, i) { return s.linkStrength(); })
 	.charge(10)
-	.friction(0.95)
+	.friction(0.9)
 	.start();
 
     var svg = d3.select('svg');
@@ -310,9 +333,6 @@ function visualizeGraph(graph, w, h) {
             d3.select("#tooltip").remove();
 	});
 
-    graph.neutralStance.x = w/2;
-    graph.neutralStance.y = h/2;
-    graph.neutralStance.fixed = true;
 
     force.on("tick", function () {
 
