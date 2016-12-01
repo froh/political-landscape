@@ -36,11 +36,7 @@
 
 /* load the theses, then display them */
 /* TODO: allow for multiple files for different elections */
-if (typeof tributary === 'undefined') {
-    d3.tsv("bayern2013.tsv", fromDataToDisplay);
-} else {
-    fromDataToDisplay(tributary.bayern2013, tributary.sh, tributary.sw);
-}
+d3.tsv("bayern2013.tsv", fromDataToDisplay);
 
 var DEBUGME_GLOBAL = {}
 function fromDataToDisplay(Bayern_2013_json, w, h) {
