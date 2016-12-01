@@ -19,7 +19,6 @@
    and to each other, so they will create a random circle.
    
    The Neutral stance is represented as a separate node.
-   TODO: rename from 'Ich' to 'neutral'
 
    The user will also be represented as a node.
    
@@ -60,7 +59,7 @@ var W = {
 
 function parseRows(rows) {
     /* 'rows' is an array with the input columns: 
-       [  {Thesis: thesis1, Party_x: stance }, ... ]
+       [  {These: thesis1, Party_x: stance }, ... ]
        
        desired structure:
        
@@ -82,7 +81,7 @@ function parseRows(rows) {
 
     rows.forEach(function (_row) {
         row = _row;
-        var thesis = row.These; // 'These' = german for 'thesis', that's hwo the data is.
+        var thesis = row.These; // 'These' = german for 'thesis', that's how the data is.
         // TODO: chop off thesis number?
         theses.push(thesis);
 
