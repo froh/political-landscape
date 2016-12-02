@@ -19,7 +19,6 @@
    and to each other, so they will create a random circle.
    
    The Neutral stance is represented as a separate node.
-   TODO: rename from 'Ich' to 'neutral'
 
    The user will also be represented as a node.
    
@@ -37,11 +36,7 @@
 
 /* load the theses, then display them */
 /* TODO: allow for multiple files for different elections */
-if (typeof tributary === 'undefined') {
-    d3.tsv("bayern2013.tsv", fromDataToDisplay);
-} else {
-    fromDataToDisplay(tributary.bayern2013, tributary.sh, tributary.sw);
-}
+d3.tsv("bayern2013.tsv", fromDataToDisplay);
 
 var DEBUGME_GLOBAL = {}
 function fromDataToDisplay(Bayern_2013_json, w, h) {
@@ -60,7 +55,7 @@ var W = {
 
 function parseRows(rows) {
     /* 'rows' is an array with the input columns: 
-       [  {Thesis: thesis1, Party_x: stance }, ... ]
+       [  {These: thesis1, Party_x: stance }, ... ]
        
        desired structure:
        
@@ -82,7 +77,7 @@ function parseRows(rows) {
 
     rows.forEach(function (_row) {
         row = _row;
-        var thesis = row.These; // 'These' = german for 'thesis', that's hwo the data is.
+        var thesis = row.These; // 'These' = german for 'thesis', that's how the data is.
         // TODO: chop off thesis number?
         theses.push(thesis);
 
