@@ -33,20 +33,18 @@
    
 */
 
+var DEBUGME_GLOBAL = {}
 
 /* load the theses, then display them */
 /* TODO: allow for multiple files for different elections */
-d3.tsv("bayern2013.tsv", fromDataToDisplay);
+var Bayern_2013_json = await d3.tsv("bayern2013.tsv");
+var parties_Theses_Stances = parseRows(Bayern_2013_json);
+var graph = makeGraph(parties_Theses_Stances);
+DEBUGME_GLOBAL.graph = graph;
 
-var DEBUGME_GLOBAL = {}
-function fromDataToDisplay(Bayern_2013_json, w, h) {
-    var parties_Theses_Stances = parseRows(Bayern_2013_json);
+visualizeGraph(graph);
 
-    var graph = makeGraph(parties_Theses_Stances);
-    DEBUGME_GLOBAL.graph = graph;
-    visualizeGraph(graph, w, h);
-}
-
+/**************************************************************************/
 var W = {
     disagree: 2,
     neutral: 1,
@@ -198,7 +196,7 @@ Stance.prototype.linkDistance = function () {
 }
 
 Stance.prototype.linkStrength = function() {
-    var linkStrength = _.object([
+    const linkStrength = new Map([
 	[W.disagree, 1],
 	[W.neutral,  0.1],
 	[W.agree,    1]
@@ -208,12 +206,12 @@ Stance.prototype.linkStrength = function() {
 }
 
 Stance.prototype.pimpLine = function(selection, i) {
-    var strokeWidth = _.object([
+    const strokeWidth = new Map([
 	[W.disagree, 2],
 	[W.neutral,  1],
 	[W.agree,    3]
     ]);
-    var strokeDasharray = _.object([
+    const strokeDasharray = new Map([
 	[W.disagree, " 4, 2"],
 	[W.neutral,  "2, 2"],
 	[W.agree,    "10, 0"]
