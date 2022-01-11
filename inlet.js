@@ -1,7 +1,7 @@
 /* visualization of the political landscape as induced by Wahl-O-Mat data
 
-   Copyright (C) 2013 Susanne Oberhauser-Hirschoff
-   This whole gist is under a BSD-3 clause License (see file BSD-3-License.txt)
+   Copyright (C) 2013, 2021 Susanne Oberhauser-Hirschoff
+   This is under a BSD-3 clause License (see file BSD-3-License.txt)
 
 
    A force based interactive layout of a Wahl-O-Mat http://www.wahl-o-mat.de
@@ -35,17 +35,9 @@
 
 var DEBUGME_GLOBAL = {}
 
-/* load the theses, then display them */
-/* TODO: allow for multiple files for different elections */
-var Bayern_2013_json = await d3.tsv("bayern2013.tsv");
-var parties_Theses_Stances = parseRows(Bayern_2013_json);
-var graph = makeGraph(parties_Theses_Stances);
-DEBUGME_GLOBAL.graph = graph;
-
-visualizeGraph(graph);
-
 /**************************************************************************/
-var W = {
+
+const W = {
     disagree: 2,
     neutral: 1,
     agree: 0
@@ -66,7 +58,7 @@ function parseRows(rows) {
     parties = null,
     stancesByThesis = [];
 
-    var stance2distance = {
+    const stance2distance = {
         'x': W.disagree,
         '-': W.neutral,
         '#': W.agree,
@@ -81,7 +73,7 @@ function parseRows(rows) {
 
         // Set the parties fromt the first row keys.
         if (!parties) {
-            parties = d3.keys(row).filter(function (x) {
+            parties = Object.keys(row).filter(function (x) {
                 return x !== 'These';
             });
         }
@@ -243,7 +235,7 @@ Neutral.prototype.color = function() { return 'white'; }
 Party.prototype._radius = 12;
 Party.prototype.color = (function() {
 
-    var _partyColors = {
+    const _partyColors = {
 	NEUTRAL	: "#ffffff",
 	SPD	: "#e2001a",
 	Linke	: "#FF0000",
@@ -258,7 +250,7 @@ Party.prototype.color = (function() {
 	NPD	: "#964B00",
 	"ÖDP"	: "#EA7c13"
     }
-    var colorGenerator = d3.scale.category20();
+    var colorScale = d3.schemeCategory10;
     var _generatedColors = {};
     var nColors = 0;
     return function partyColor() {
@@ -267,7 +259,8 @@ Party.prototype.color = (function() {
 
 	if (party in _partyColors) return _partyColors[party];
 	if (party in _generatedColors) return _generatedColors[party];
-	return _generatedColors[party] = colorGenerator(nColors++);
+	if (nColors++ >= colorScale.length) throw "not enough party colors";
+	return _generatedColors[party] = colorScale[nColors++];
     }
 }())
 
@@ -351,3 +344,16 @@ function visualizeGraph(graph, w, h) {
 
     });  
 }
+
+var graph;
+/* load the theses, then display them */
+/* TODO: allow for multiple files for different elections */
+d3.tsv("bayern2013.tsv")
+    .then(Bayern_2013_json => parseRows(Bayern_2013_json))
+    .then(parties_Theses_Stances => makeGraph(parties_Theses_Stances))
+    .then(g => {
+    	graph = g;
+    	visualizeGraph(graph);
+    });
+
+DEBUGME_GLOBAL.graph = graph;
