@@ -1,7 +1,7 @@
 /* visualization of the political landscape as induced by Wahl-O-Mat data
 
-   Copyright (C) 2013, 2021 Susanne Oberhauser-Hirschoff
-   This is under a BSD-3 clause License (see file BSD-3-License.txt)
+   Copyright (C) 2013 Susanne Oberhauser-Hirschoff
+   This whole gist is under a BSD-3 clause License (see file BSD-3-License.txt)
 
 
    A force based interactive layout of a Wahl-O-Mat http://www.wahl-o-mat.de
@@ -65,27 +65,23 @@ function parseRows(rows) {
         'y': W.agree
     }
 
-    rows.forEach(function (_row) {
-        row = _row;
-        var thesis = row.These; // 'These' = german for 'thesis', that's how the data is.
-        // TODO: chop off thesis number?
-        theses.push(thesis);
-
-        // Set the parties fromt the first row keys.
-        if (!parties) {
-            parties = Object.keys(row).filter(function (x) {
+    // Set the parties fromt the first row keys.
+    parties = Object.keys(rows[0]).filter(function (x) {
                 return x !== 'These';
             });
-        }
+
+    rows.forEach(function (row) {
+        var thesis = row.These; // 'These' = german for 'thesis', that's how the data is.
+        // TODO: chop off thesis number from text?
+        // "7. Ah blah e spah njol.", chop off the "7. "?
+        theses.push(thesis);
 
         var stancesThisRow = [];
 
         parties.forEach(function (party) {
-            stancesThisRow.push(row[party]);
-        });
-
-        stancesThisRow = stancesThisRow.map(function (item) {
-            return stance2distance[item];
+        	var stance = row[party];
+        	var distance = stance2distance[stance];
+            stancesThisRow.push(distance);
         });
 
         stancesByThesis.push(stancesThisRow);
@@ -210,7 +206,7 @@ Stance.prototype.pimpLine = function(selection, i) {
     ]);
     
     d3.select(selection)
-	.style("stroke", this.source.color())
+	.style("stroke", "grey"/*this.source.color()*/)
 	.style("stroke-width", strokeWidth[this.agreement])
 	.style("stroke-dasharray", strokeDasharray[this.agreement])
 	.style("opacity", 0.6)
@@ -273,15 +269,7 @@ function visualizeGraph(graph, w, h) {
     graph.neutralStance.y = h/2;
     graph.neutralStance.fixed = true;
 
-    var force = d3.layout.force()
-	.nodes(graph.nodes)
-	.links(graph.edges)
-	.size([w, h])
-	.linkDistance( function(s, i) { return s.linkDistance(); } )
-	.linkStrength( function(s, i) { return s.linkStrength(); })
-	.charge(10)
-	.friction(0.9)
-	.start();
+    // create the svg
 
     var svg = d3.select('svg');
 
@@ -296,8 +284,10 @@ function visualizeGraph(graph, w, h) {
 	.data(graph.nodes)
 	.enter()
 	.append("circle")
-	.each(function(d, i) { d.pimpCircle(this, i) })
-	.call(force.drag)
+	.each(function(d, i) { d.pimpCircle(this, i) });
+
+    // create a tooltip description on the nodes
+    nodes = nodes
 	.on('mouseover', function (d) {
             var x = d3.select(this).attr("cx"),
             y = d3.select(this).attr("cy");
@@ -312,15 +302,26 @@ function visualizeGraph(graph, w, h) {
 		.attr("font-weight", "bold")
 		.attr("fill", "black")
 		.text(d.label);
-
 	})
 	.on('mouseout', function () {
             d3.select("#tooltip").remove();
 	});
 
+    /*
+    // animate the graph
+    var simulation = d3.forceSimulation()
+	.nodes(graph.nodes)
+	.links(graph.edges)
+	// .size([w, h])
+	.linkDistance( function(s, i) { return s.linkDistance(); } )
+	.linkStrength( function(s, i) { return s.linkStrength(); })
+	.charge(10)
+	.friction(0.9)
+	.start();
+    simulation.on("tick", function () {
 
-    force.on("tick", function () {
-
+    nodes.call(d3.drag(simulation))
+    
 	edges
 	    .attr("x1", function (d) {
 		return d.source.x;
@@ -342,7 +343,9 @@ function visualizeGraph(graph, w, h) {
 		return d.y;
             });
 
-    });  
+    });
+    */
+  
 }
 
 var graph;
@@ -357,3 +360,5 @@ d3.tsv("bayern2013.tsv")
     });
 
 DEBUGME_GLOBAL.graph = graph;
+
+;
