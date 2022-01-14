@@ -1,7 +1,7 @@
 'use strict';
 /* visualization of the political landscape as induced by Wahl-O-Mat data
 
-   Copyright (C) 2013 Susanne Oberhauser-Hirschoff
+   Copyright (C) 2013, 2022 Susanne Oberhauser-Hirschoff
    This whole gist is under a BSD-3 clause License (see file BSD-3-License.txt)
 
 
@@ -186,7 +186,7 @@ function makeGraph(data) {
 	var nTheses = graph.nodes.length;
 	var neutralStanceId = nTheses;
 
-	/* create node for user and for The Neutral Stance */
+	/* create node for the Neutral Stance */
 	graph.neutralStance = new Neutral('Neutral');
 	graph.nodes.push(graph.neutralStance);
 
@@ -216,27 +216,15 @@ function makeGraph(data) {
 }
 
 // svg visualization.
+
 // enrich the nodes and edges of the graph with visualization 
-Stance.prototype.linkDistance = function () {
-	// transform stance.agreement into distance in graph
-	return Math.pow(this.agreement, 2.4) * 120 + 10;
-}
 
-Stance.prototype.linkStrength = function() {
-	const _linkStrength = new Map([
-		[W.disagree, 1],
-		[W.neutral,  0.1],
-		[W.agree,    1]
-	]);
-
-	return _linkStrength.get(this.agreement);
-}
 
 Stance.prototype.strokeWidth = function() {
 	const strokeWidth = new Map([
-		[W.disagree, 2],
+		[W.disagree, 1],
 		[W.neutral,  1],
-		[W.agree,    3]
+		[W.agree,    4]
 	]);
 
 	return strokeWidth.get(this.agreement);
@@ -291,6 +279,23 @@ Party.prototype.color = (function makecolorgenerator() {
 	}
 }())
 
+
+Stance.prototype.linkDistance = function () {
+	// transform stance.agreement into distance in graph
+	return Math.pow(2.4, this.agreement) * 120 + 10;
+}
+
+Stance.prototype.linkStrength = function() {
+	const _linkStrength = new Map([
+		[W.disagree, 0.8],
+		[W.neutral,  0.2],
+		[W.agree,    0.8]
+	]);
+
+	return _linkStrength.get(this.agreement);
+}
+
+
 function visualizeGraph(graph, w, h) {
 
 	w = w || 1200;
@@ -311,7 +316,7 @@ function visualizeGraph(graph, w, h) {
 			.style("stroke", d => d.target.color())
 			.style("stroke-width", d => d.strokeWidth())
 			.style("stroke-dasharray", d => d.strokeDasharray())
-			.style("opacity", 0.6)
+			.style("opacity", 0.4)
 
 	//Create nodes as circles
 	var nodes = svg.selectAll("circle")
@@ -355,58 +360,50 @@ function visualizeGraph(graph, w, h) {
 	simulation
 		.velocityDecay(0.9)
 		.force("link", d3.forceLink()
-			.distance( function(s, i) { return s.linkDistance(); } )
-			.strength( function(s, i) { return s.linkStrength(); } )
+			.distance( s => s.linkDistance() )
+			.strength( s => s.linkStrength() )
 			.links(graph.edges)
 		)
 		.force("charge", d3.forceManyBody()
 			.strength(10)
 		).force("center", d3.forceCenter());
 
+
 	simulation.on("tick", function () {
-
 		edges
-			.attr("x1", function (d) {
-			return d.source.x;
-				})
-				.attr("y1", function (d) {
-			return d.source.y;
-				})
-				.attr("x2", function (d) {
-			return d.target.x;
-				})
-				.attr("y2", function (d) {
-			return d.target.y;
-				});
-
-		nodes.attr("cx", function (d) {
-				return d.x;
-			})
-				.attr("cy", function (d) {
-			return d.y;
-				});
+			.attr("x1", d => d.source.x)
+			.attr("y1", d => d.source.y)
+			.attr("x2", d => d.target.x)
+			.attr("y2", d => d.target.y);
+		nodes
+			.attr("cx", d => d.x)
+			.attr("cy", d => d.y);
 	});
 
 	nodes.call(drag(simulation));
 
-	function drag(/*simulation*/) {
-		function startdrag(event) {
+	function drag(simulation) {
+		function startdrag(event, d) {
 			// reheat the simulation
-			//if (!event.active) simulation.alphaTarget(0.3).restart();
+			if (!event.active) simulation.alphaTarget(0.3).restart();
 			// fix the dragged thing, .fx and .fy override the force simulation
 			event.subject.fx = event.subject.x;
 			event.subject.fy = event.subject.y;
+			edges
+				.style("stroke", dd => (dd.source == d || dd.target == d) ? dd.source.color():dd.target.color());
 		}
-		function dodrag(event) {
+		function dodrag(event, d) {
 			// move it to where the pointer goes
 			event.subject.fx = event.x;
 			event.subject.fy = event.y;
 		}
-		function enddrag(event) {
-			//if (!event.active) simulation.alphaTarget(0);
+		function enddrag(event, d) {
+			if (!event.active) simulation.alphaTarget(0);
 			// release the dragged thing back to the force simulation
 			event.subject.fx = null;
 			event.subject.fy = null;
+			edges
+				.style("stroke", dd => dd.target.color());
 		}
 		return d3.drag()
 		.on("start", startdrag)
@@ -416,6 +413,4 @@ function visualizeGraph(graph, w, h) {
 
 
 	simulation.restart();
-}
-
-;
+};
