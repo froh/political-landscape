@@ -232,8 +232,8 @@ Stance.prototype.strokeWidth = function() {
 
 Stance.prototype.strokeDasharray = function() {
 	const strokeDasharray = new Map([
-		[W.disagree, " 4, 2"],
-		[W.neutral,  "2, 2"],
+		[W.disagree, " 6, 4"],
+		[W.neutral,  "2, 4"],
 		[W.agree,    "10, 0"]
 	]);
 
@@ -279,15 +279,16 @@ Party.prototype.color = (function makecolorgenerator() {
 	}
 }())
 
+/***********************************************************************/
 
 Stance.prototype.linkDistance = function () {
 	// transform stance.agreement into distance in graph
-	return Math.pow(2.4, this.agreement) * 120 + 10;
+	return Math.pow(3, this.agreement) * 80 - 20;
 }
 
 Stance.prototype.linkStrength = function() {
 	const _linkStrength = new Map([
-		[W.disagree, 0.8],
+		[W.disagree, 0.6],
 		[W.neutral,  0.2],
 		[W.agree,    0.8]
 	]);
@@ -352,21 +353,33 @@ function visualizeGraph(graph, w, h) {
 		d3.select("#tooltip").remove();
 	});
 
-
 	// animate the graph
+
+	//graph.nodes.find(d => d.label == "Linke").fx = -400;
+	//graph.nodes.find(d => d.label == "REP").fx = +400;
+	
 	var simulation = d3.forceSimulation().stop();
 	simulation
 		.nodes(graph.nodes);
 	simulation
-		.velocityDecay(0.9)
+		.velocityDecay(0.3)
 		.force("link", d3.forceLink()
 			.distance( s => s.linkDistance() )
 			.strength( s => s.linkStrength() )
 			.links(graph.edges)
 		)
-		.force("charge", d3.forceManyBody()
-			.strength(10)
-		).force("center", d3.forceCenter());
+		//.force("charge", d3.forceManyBody()
+	//		.strength(10)
+		//)
+		//.force("center", d3.forceCenter())
+		//.force("min distance", d3.forceCollide(7))
+		//.force("links-rechts", (() => {
+		//	const LR = { "Linke": -400, "NPD": +400 };
+		//	return d3.forceX()
+		//		.x( d => (d.label in LR) ? LR[d.label] : 0)
+		//		.strength( d => (d.label in LR)? 0.999 : 0.01 );
+		//	})())
+		;
 
 
 	simulation.on("tick", function () {
@@ -390,7 +403,8 @@ function visualizeGraph(graph, w, h) {
 			event.subject.fx = event.subject.x;
 			event.subject.fy = event.subject.y;
 			edges
-				.style("stroke", dd => (dd.source == d || dd.target == d) ? dd.source.color():dd.target.color());
+				.style("stroke", dd => (dd.source == d || dd.target == d) ? dd.source.color():dd.target.color())
+				.style("opacity",  dd => (dd.source == d || dd.target == d) ? 0.9 : 0.4);
 		}
 		function dodrag(event, d) {
 			// move it to where the pointer goes
@@ -403,7 +417,8 @@ function visualizeGraph(graph, w, h) {
 			event.subject.fx = null;
 			event.subject.fy = null;
 			edges
-				.style("stroke", dd => dd.target.color());
+				.style("stroke", dd => dd.target.color())
+				.style("opacity", 0.4);
 		}
 		return d3.drag()
 		.on("start", startdrag)
@@ -412,5 +427,8 @@ function visualizeGraph(graph, w, h) {
 	}
 
 
-	simulation.restart();
+	simulation
+		.alpha(.3)
+		.alphaDecay(0.005)
+		.restart();
 };
